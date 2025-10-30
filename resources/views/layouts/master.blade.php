@@ -11,7 +11,7 @@
     <!-- App favicon -->
     <link rel="shortcut icon" href="{{ URL::asset('assets/images/favicon.ico') }}">
     @include('layouts.head-css')
-    @vite(['resources/css/app.css'])
+    @vite(['resources/sass/app.scss'])
 </head>
 
 @section('body')

@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             MessageSeeder::class,
             ReportSeeder::class,
+            SettingSeeder::class,
         ]);
     }
 }

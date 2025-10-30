@@ -3,6 +3,7 @@
 return [
     "Report" => "Report",
     "Messages" => "Messages",
+    "Setting" => "Setting",
     "Package_list" => "Package List",
     "Package_add" => "Package Add",
     "Package" => "Package",

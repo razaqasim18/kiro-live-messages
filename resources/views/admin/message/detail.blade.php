@@ -60,8 +60,7 @@
                             @foreach ($msgs as $msg)
                                 @php
                                     // Assuming $userOne is the first participant and $userTwo is the second
-                                    $isMine = $msg->sender_id === $userOne->id; // current view user’s messages on right
-
+                                    $isMine = $msg->sender_id == $userOne->id; // current view user’s messages on right
                                     $receiverimage = $msg->receiver->avatar
                                         ? URL::asset('storage/' . $msg->receiver->avatar)
                                         : asset('assets/images/users/avatar-3.jpg');

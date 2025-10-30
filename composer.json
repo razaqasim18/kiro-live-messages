@@ -2,7 +2,10 @@
     "name": "laravel/laravel",
     "type": "project",
     "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["laravel", "framework"],
+    "keywords": [
+        "laravel",
+        "framework"
+    ],
     "license": "MIT",
     "require": {
         "php": "^8.2",
@@ -14,6 +17,7 @@
         "livewire/livewire": "^3.6",
         "munafio/chatify": "^1.6",
         "pusher/pusher-php-server": "^7.2",
+        "stripe/stripe-php": "^18.0",
         "taylanunutmaz/agora-token-builder": "^1.1"
     },
     "require-dev": {

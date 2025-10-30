@@ -614,7 +614,7 @@
                                 window.location.href = "{{ route('friends.index') }}";
                             });
                         }
-                        $("#coinid").text(data.remaining);
+                        $("#coinid").text("Coins: " + data.remaining);
                     })
                     .catch(console.error);
             }, 90000); // every 1.5 min

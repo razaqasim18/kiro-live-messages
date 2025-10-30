@@ -50,30 +50,25 @@
                                 @foreach ($messagesGroup as $msg)
                                     @php
 
-                                        $isMine = $msg->sender_id === auth()->id();
+                                        $isMine = $msg->sender_id == auth()->id();
 
                                         $receiverimage = $msg->receiver->avatar
                                             ? URL::asset('storage/' . $msg->receiver->avatar)
-                                            : asset('assets/images/users/avatar-2.jpg');
+                                            : asset('assets/images/users/avatar-1.jpg');
 
                                         $senderimage = $msg->sender->avatar
                                             ? URL::asset('storage/' . $msg->sender->avatar)
-                                            : asset('assets/images/users/avatar-6.jpg');
-
-                                        // dump(
-                                        //     $msg->receiver->id . ':' . $receiverimage,
-                                        //     $msg->sender->id . ':' . $senderimage,
-                                        // );
+                                            : asset('assets/images/users/avatar-2.jpg');
 
                                     @endphp
                                     <li class="mb-3">
                                         <div
                                             class="d-flex {{ $isMine ? 'justify-content-end' : 'justify-content-start' }}">
                                             {{-- Avatar --}}
-                                            @if (!$isMine)
-                                                <img src="{{ $receiverimage }}" class="rounded-circle avatar-sm me-2"
-                                                    alt="{{ $msg->sender->name }}">
-                                            @endif
+                                            @unless ($isMine)
+                                                <img src="{{ $senderimage }}" class="rounded-circle avatar-sm me-2"
+                                                    alt="{{ $msg->sender->name }}sender">
+                                            @endunless
 
                                             {{-- Message Bubble --}}
                                             <div class="p-2 rounded"
@@ -101,8 +96,8 @@
                                             </div>
 
                                             @if ($isMine)
-                                                <img src="{{ $senderimage }}" class="rounded-circle avatar-sm ms-2"
-                                                    alt="{{ $msg->sender->name }}">
+                                                <img src="{{ $receiverimage }}" class="rounded-circle avatar-sm ms-2"
+                                                    alt="{{ $msg->receiver->name }}receiver">
                                             @endif
                                         </div>
                                     </li>
@@ -162,7 +157,7 @@
                 </div>
             @endforeach
         </div>
-        >
+
 
 
 

@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Events\ChatEvent;
+use App\Helpers\SettingHelper;
 use App\Models\Gift;
 use App\Models\Message;
 use App\Models\User;
@@ -152,7 +153,7 @@ class Chat extends Component
 
         // Deduct and add coins
         $giftsendby->decrement('coins', $coins);
-        $giftsendto->increment('coins', $coins);
+        $giftsendto->increment('coins', $coins - SettingHelper::getSettingValueByName('gift_coins_commission') ?? 0);
 
         $this->dispatch('deduct-coins', [
             'user_id' => $giftsendby->id,

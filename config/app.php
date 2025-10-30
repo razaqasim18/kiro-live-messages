@@ -1,5 +1,7 @@
 <?php
 
+
+
 return [
 
     /*
@@ -126,6 +128,16 @@ return [
         'driver' => env('APP_MAINTENANCE_DRIVER', 'file'),
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
+    'aliases' => [
+        // ...
+        'SettingHelper' => App\Helpers\SettingHelper::class,
+        'URL' => Illuminate\Support\Facades\URL::class,
+        'Auth' => Illuminate\Support\Facades\Auth::class,
+        'Route' => Illuminate\Support\Facades\Route::class,
+        'Hash' =>  Illuminate\Support\Facades\Hash::class,
+        "Str" => Illuminate\Support\Str::class,
+        "Session" => Illuminate\Support\Facades\Session::class,
 
+    ],
 
 ];

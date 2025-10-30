@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Route;
 use App\Events\CallEnded;
 use App\Events\IncomingCall;
 use App\Http\Controllers\Admin\GiftController;
+use App\Http\Controllers\Admin\SettingController;
 use App\Livewire\Chat;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
@@ -25,7 +26,10 @@ Route::get('/', function () {
     return to_route('login');
 });
 
-
+// php artisan config:clear
+// php artisan view:clear
+// php artisan route:clear
+// php artisan optimize:clear
 
 
 
@@ -41,6 +45,11 @@ Route::middleware(['auth:web'])->group(function () {
     Route::prefix("package")->as("package.")->group(function () {
         Route::get('/', [PurchaseController::class, 'index'])->name('index');
         Route::get('/purchase/{id}', [PurchaseController::class, 'purchase'])->name('purchase');
+
+        Route::post('/payment/process/{id}', [PurchaseController::class, 'processPayment'])->name('payment.process');
+
+        Route::get('/payment/success', [PackageController::class, 'paymentSuccess'])->name('payment.success');
+        Route::get('/payment/cancel', [PackageController::class, 'paymentCancel'])->name('payment.cancel');
     });
 
     Route::prefix('friends')->as('friends.')->group(function () {
@@ -93,8 +102,12 @@ Route::middleware(['auth:web'])->group(function () {
     // Admin
     Route::middleware(['auth', 'admin'])->prefix('admin')->as('admin.')->group(function () {
 
+        Route::get('/', function () {
+            return redirect()->route('admin.dashboard');
+        });
+
         // Dashboard/Home
-        Route::get('/home', [AdminController::class, 'index'])->name('dashboard');
+        Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
 
         // Users routes
         Route::prefix('user')->as('user.')->group(function () {
@@ -134,7 +147,6 @@ Route::middleware(['auth:web'])->group(function () {
             Route::delete('/delete/{id}', [PackageController::class, 'delete'])->name('delete');
         });
 
-
         Route::prefix('gift')->as('gift.')->group(function () {
             Route::get('/', [GiftController::class, 'index'])->name('index');
             Route::get('/add', [GiftController::class, 'add'])->name('add');
@@ -142,6 +154,11 @@ Route::middleware(['auth:web'])->group(function () {
             Route::get('edit/{id}', [GiftController::class, 'edit'])->name('edit');
             Route::post('/update/{id}', [GiftController::class, 'update'])->name('update');
             Route::delete('/delete/{id}', [GiftController::class, 'delete'])->name('delete');
+        });
+
+        Route::prefix('setting')->as('setting.')->group(function () {
+            Route::get('/', [SettingController::class, 'index'])->name('index');
+            Route::post('/save', [SettingController::class, 'save'])->name('save');
         });
     });
 });

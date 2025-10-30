@@ -22,7 +22,7 @@
     </style>
     <!-- ✅ Livewire package CSS -->
     @livewireStyles
-    @vite(['resources/css/app.css'])
+    @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 </head>
 
 @section('body')

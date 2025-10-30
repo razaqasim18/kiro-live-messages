@@ -9,6 +9,7 @@ use Pusher\Pusher;
 use TaylanUnutmaz\AgoraTokenBuilder\RtcTokenBuilder;
 use Illuminate\Support\Str;
 use App\Events\IncomingCall;
+use App\Helpers\SettingHelper;
 
 class FriendController extends Controller
 {
@@ -68,8 +69,8 @@ class FriendController extends Controller
     {
         $callerUser = User::find($caller);
 
-        if ($callerUser->coins >= 5) {
-            $callerUser->decrement('coins', 5);
+        if ($callerUser->coins >= SettingHelper::getSettingValueByName("call_coins_deduction") ?? 0) {
+            $callerUser->decrement('coins', SettingHelper::getSettingValueByName("call_coins_deduction") ?? 0);
             return response()->json(['status' => 'ok', 'remaining' => $callerUser->coins]);
         }
 

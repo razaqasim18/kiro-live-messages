@@ -68,6 +68,13 @@
                         <span data-key="t-image">@lang('translation.Report')</span>
                     </a>
                 </li>
+
+                <li>
+                    <a href="{{ route('admin.setting.index') }}">
+                        <i data-feather="settings"></i>
+                        <span data-key="t-setting">@lang('translation.Settings')</span>
+                    </a>
+                </li>
             </ul>
         </div>
         <!-- Sidebar -->
