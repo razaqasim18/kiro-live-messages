@@ -50,30 +50,25 @@
                         @foreach ($messagesGroup as $msg)
                         @php
 
-                        $isMine = $msg->sender_id === auth()->id();
+                        $isMine = $msg->sender_id == auth()->id();
 
                         $receiverimage = $msg->receiver->avatar
                         ? URL::asset('storage/' . $msg->receiver->avatar)
-                        : asset('assets/images/users/avatar-6.jpg');
+                        : asset('assets/images/users/avatar-1.jpg');
 
                         $senderimage = $msg->sender->avatar
                         ? URL::asset('storage/' . $msg->sender->avatar)
-                        : asset('assets/images/users/avatar-6.jpg');
-
-                        // dump(
-                        // $msg->receiver->id . ':' . $receiverimage,
-                        // $msg->sender->id . ':' . $senderimage,
-                        // );
+                        : asset('assets/images/users/avatar-2.jpg');
 
                         @endphp
                         <li class="mb-3">
                             <div
                                 class="d-flex {{ $isMine ? 'justify-content-end' : 'justify-content-start' }}">
                                 {{-- Avatar --}}
-                                @if (!$isMine)
+                                @unless ($isMine)
                                 <img src="{{ $senderimage }}" class="rounded-circle avatar-sm me-2"
-                                    alt="{{ $msg->sender->name }}">
-                                @endif
+                                    alt="{{ $msg->sender->name }}sender">
+                                @endunless
 
                                 {{-- Message Bubble --}}
                                 <div class="p-2 rounded"
@@ -83,7 +78,15 @@
                                                     background-color: {{ $isMine ? '#007bff' : '#f1f0f0' }};
                                                     color: {{ $isMine ? '#fff' : '#000' }};
                                                 ">
-                                    <div class="mb-1">{!! nl2br(e($msg->message)) !!}</div>
+                                    <div class="mb-1">
+                                        <p class="mb-0">
+                                            @if (Str::contains($msg->message, '<dotlottie-wc'))
+                                                {!! $msg->message !!}
+                                                @else
+                                                {!! nl2br(e($msg->message)) !!}
+                                                @endif
+                                        </p>
+                                    </div>
                                     <div class="text-end">
                                         <small
                                             style="color: {{ $isMine ? '#fff' : '#000' }}; font-size: 10px;">
@@ -93,8 +96,8 @@
                                 </div>
 
                                 @if ($isMine)
-                                <img src="{{ $senderimage }}" class="rounded-circle avatar-sm ms-2"
-                                    alt="{{ $msg->sender->name }}">
+                                <img src="{{ $receiverimage }}" class="rounded-circle avatar-sm ms-2"
+                                    alt="{{ $msg->receiver->name }}receiver">
                                 @endif
                             </div>
                         </li>
@@ -132,63 +135,43 @@
 
         {{-- Gift Div --}}
         <div class="card ms-3" style="width:25%; height: calc(100vh - 30px); overflow-y: auto;">
-            <div class="m-2 p-3 px-3">
-                <div class="border d-flex">
+            @foreach ($gifts as $gift)
+            <div style="cursor: pointer" class="m-2 p-3 px-3 position-relative"
+                wire:click.prevent="sendGift('{{ $gift->link }}', {{ $gift->coins }})">
+                {{-- Default display --}}
+                <div class="border d-flex justify-content-center align-items-center gift-box">
                     <div class="text-center">
-                        <a>
-                            <dotlottie-wc
-                                src="https://lottie.host/60e55874-2800-4ccb-a4ce-c1eb61dfb587/URqsZw2fIa.lottie"
-                                style="width: 100%;height: 100%" autoplay loop></dotlottie-wc>
-                            <h6 class="mt-2 mb-0 text-dark">Send Gift</h6>
-                        </a>
+                        <dotlottie-wc src="{{ $gift->link }}" style="width: 100%; height: 100%;" autoplay
+                            loop></dotlottie-wc>
+                        <h6 class="mt-2 mb-0 text-dark">Send for {{ $gift->coins }}</h6>
                     </div>
                 </div>
-            </div>
 
-            <div class="m-2 p-3 px-3">
-                <div class="border d-flex">
-                    <div class="text-center">
-                        <a href="#" wire:click="sendGift('20')">
-                            <dotlottie-wc
-                                src="https://lottie.host/4db68bbd-31f6-4cd8-84eb-189de081159a/IGmMCqhzpt.lottie"
-                                style="width: 100%;height: 100%" autoplay loop></dotlottie-wc>
-                            <h6 class="mt-2 mb-0 text-dark">Send Gift 20</h6>
-                        </a>
+                {{-- Spinner overlay (only shows during sendGift call) --}}
+                <div wire:loading.flex wire:target="sendGift"
+                    class="position-absolute top-0 start-0 w-100 h-100 justify-content-center align-items-center bg-white bg-opacity-75 rounded">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Sending...</span>
                     </div>
                 </div>
             </div>
-
-            <div class="m-2 p-3 px-3">
-                <div class="border d-flex">
-                    <div class="text-center">
-                        <a>
-                            <dotlottie-wc
-                                src="https://lottie.host/60e55874-2800-4ccb-a4ce-c1eb61dfb587/URqsZw2fIa.lottie"
-                                style="width: 100%;height: 100%" autoplay loop></dotlottie-wc>
-                            <h6 class="mt-2 mb-0 text-dark">Send Gift</h6>
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="m-2 p-3 px-3">
-                <div class="border d-flex">
-                    <div class="text-center">
-                        <a>
-                            <dotlottie-wc
-                                src="https://lottie.host/60e55874-2800-4ccb-a4ce-c1eb61dfb587/URqsZw2fIa.lottie"
-                                style="width: 100%;height: 100%" autoplay loop></dotlottie-wc>
-                            <h6 class="mt-2 mb-0 text-dark">Send Gift</h6>
-                        </a>
-                    </div>
-                </div>
-            </div>
+            @endforeach
         </div>
+
+
+
 
         {{-- Message Sound --}}
         <audio id="messageSound" src="{{ asset('sounds/message-sound.mp3') }}" preload="auto"></audio>
 
         {{-- Scroll & Sound Script --}}
+        <script>
+            window.currentUserId = {
+                {
+                    auth() - > id() ?? 'null'
+                }
+            };
+        </script>
         <script>
             document.addEventListener('livewire:init', () => {
                 const chatBox = document.getElementById('chatMessages');
@@ -217,9 +200,43 @@
                         chatBox.scrollTop = 100;
                     }, 120);
                 });
+
+                function payloadFromEvent(e) {
+                    if (Array.isArray(e)) return e[0] || {};
+                    return e || {};
+                }
+
+                Livewire.on('deduct-coins', (e) => {
+                    const payload = payloadFromEvent(e); // { user_id, coins }
+                    if (!payload.user_id) return;
+                    if (payload.user_id !== currentUserId) return; // not for this user
+                    document.getElementById('coinid').textContent = `Coins: ${payload.coins}`;
+                });
+
+                // Add event (only update receiver's UI)
+                Livewire.on('add-coins', (e) => {
+                    const payload = payloadFromEvent(e);
+                    console.log(payload);
+                    if (!payload.user_id) return;
+                    if (payload.user_id !== currentUserId) return; // not for this user
+                    document.getElementById('coinid').textContent = `Coins: ${payload.coins}`;
+                });
+
+                Livewire.on("gift-error", () => {
+                    Swal.fire({
+                        title: 'Warning',
+                        text: 'Not Enough coins.',
+                        icon: 'error',
+                        timer: 2500,
+                        showConfirmButton: false,
+                        position: 'top-end',
+                        toast: true
+                    });
+                });
             });
         </script>
         <script src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.8.5/dist/dotlottie-wc.js" type="module"></script>
+        {{-- <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script> --}}
 
     </div>
 </div>

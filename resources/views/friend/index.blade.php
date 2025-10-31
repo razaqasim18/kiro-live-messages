@@ -4,6 +4,12 @@
 @endsection
 @section('css')
     <link href="{{ URL::asset('/assets/libs/admin-resources/admin-resources.min.css') }}" rel="stylesheet">
+    <style>
+        <style>#chatMessages {
+            scroll-behavior: smooth;
+            overscroll-behavior-y: contain;
+        }
+    </style>
 @endsection
 @section('content')
     @component('components.breadcrumb')
@@ -11,16 +17,16 @@
             Dashboard
         @endslot
         @slot('title')
-            Friends
+            Converstion List
         @endslot
     @endcomponent
 
     <div class="row">
 
-        @foreach ($friends as $friend)
+        @foreach ($conversation as $friend)
             <div class="col-xl-4 col-md-3 col-sm-6 col-12 ">
-                <div class="card">
-                    <div class="card-body">
+                <div class="card d-flex flex-column h-10">
+                    <div class="card-body flex-grow-1">
                         {{-- <div class="dropdown float-end">
                                 <a class="text-muted dropdown-toggle font-size-16" href="#" role="button"
                                     data-bs-toggle="dropdown" aria-haspopup="true">
@@ -34,37 +40,33 @@
                             </div> --}}
                         <div class="d-flex align-items-center">
                             <div>
-                                <img src="{{ $friend->avatar ? URL::asset('storage/' . $friend->avatar) : asset('assets/images/users/avatar-2.jpg') }}
-"
-                                    alt="" class="avatar-lg rounded-circle img-thumbnail">
+                                <img src="@if ($friend->user_two_avatar != '') {{ asset('storage/' . $friend->user_two_avatar) }}
+              @else
+                {{ asset('assets/images/users/avatar-' . ($friend->user_two_gender ? 1 : 2) . '.jpg') }} @endif"
+                                    alt="User Avatar" class="rounded-circle avatar-lg image-popup">
                             </div>
                             <div class="flex-1 ms-3">
-                                <h5 class="font-size-15 mb-1"><a href="#" class="text-dark">{{ $friend->name }}</a>
+                                <h5 class="font-size-15 mb-1"><a href="#"
+                                        class="text-dark">{{ $friend->user_two_name }}</a>
                                 </h5>
 
                             </div>
                         </div>
                         <div class="mt-3 pt-1">
-                            <p class="text-muted mb-0"><i
-                                    class="mdi mdi-phone font-size-15 align-middle pe-2 text-primary"></i>
-                                {{ $friend->phone }}</p>
-                            <p class="text-muted mb-0 mt-2"><i
-                                    class="mdi mdi-email font-size-15 align-middle pe-2 text-primary"></i>
-                                {{ $friend->email }}</p>
-                            <p class="text-muted mb-0 mt-2">
-                                @if (strtolower($friend->gender) === 'male' || $friend->gender == 1)
-                                    <i class="mdi mdi-gender-male text-primary font-size-15 align-middle pe-2"></i> Male
+
+                            <p class="mb-0">
+                                @if (Str::contains($friend->last_message, '<dotlottie-wc'))
+                                    🎉🎉🎉You received gift 🎉🎉🎉
                                 @else
-                                    <i class="mdi mdi-gender-female text-danger font-size-15 align-middle pe-2"></i>
-                                    Female
+                                    {!! nl2br(e($friend->last_message)) !!}
                                 @endif
                             </p>
 
                         </div>
                     </div>
 
-                    <div class="btn-group" role="group">
-                        <a @if (auth()->user()->coins) href="{{ route('friends.call.start', ['id' => Str::slug($friend->name) . '_' . $friend->id]) }}" @else href="javascript:void(0)" @endif
+                    <div class="btn-group mt-auto" role="group">
+                        <a @if (auth()->user()->coins) href="{{ route('friends.call.start', ['id' => Str::slug($friend->user_two_name) . '_' . $friend->user_two_id]) }}" @else href="javascript:void(0)" @endif
                             class="btn btn-outline-light text-truncate">
                             <i class="mdi mdi-phone text-primary font-size-15 align-middle pe-2"></i>
                             @if (auth()->user()->coins)
@@ -74,7 +76,7 @@
                             @endif
                         </a>
 
-                        <a href="{{ route('friends.chat', ['id' => $friend->id]) }}"
+                        <a href="{{ route('friends.chat', ['id' => $friend->user_two_id]) }}"
                             class="btn btn-outline-light text-truncate">
                             <i class="mdi mdi-message text-primary font-size-15 align-middle pe-2"></i>
                             Chat
@@ -95,4 +97,5 @@
     <!-- end row-->
 @endsection
 @section('script')
+    <script src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.8.5/dist/dotlottie-wc.js" type="module"></script>
 @endsection

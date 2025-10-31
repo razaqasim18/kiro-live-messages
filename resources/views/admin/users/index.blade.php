@@ -72,7 +72,7 @@
                                         <th>Name</th>
                                         <th>Email</th>
                                         <th>Coins</th>
-                                        <th>Phone</th>
+                                        <th>Active</th>
                                         <th>Blocked</th>
                                         <th>Action</th>
                                     </tr>
@@ -88,12 +88,39 @@
                                             <td>{{ $row->name }}</td>
                                             <td>{{ $row->email }}</td>
                                             <td>{{ $row->coins }}</td>
-                                            <td>{{ $row->phone }}</td>
                                             <td>
+                                                <form action="{{ route('admin.user.active.status', ['id' => $row->id]) }}"
+                                                    method="get" class="d-inline active-form">
+                                                    @csrf
+                                                    <button type="submit"
+                                                        class="btn btn-success btn-sm unblock-btn d-none">
+                                                        <i data-feather="check" class="icon-lg"></i>
+                                                    </button>
+
+                                                    @if ($row->active_status)
+                                                        <a href="#" class="btn btn-success btn-sm activestatus-a"
+                                                            data-activestatus="{{ $row->active_status }}">Online</a>
+                                                    @else
+                                                        <a href="#" class="btn btn-danger btn-sm activestatus-a"
+                                                            data-activestatus="{{ $row->active_status }}">Offline</a>
+                                                    @endif
+                                                </form>
+
+                                            </td>
+                                            <td class="text-center">
                                                 @if ($row->is_blocked)
-                                                    <a class="btn btn-danger btn-sm">Blocked</a>
+                                                    <form action="{{ route('admin.user.unblock', ['id' => $row->id]) }}"
+                                                        method="POST" class="d-inline unblock-form">
+                                                        @csrf
+                                                        <button type="button" class="btn btn-danger btn-sm unblock-btn">
+                                                            Blocked till <br />
+                                                            ({{ date('Y-m-d H:i: a', strtotime($row->blocked_till)) }})
+                                                        </button>
+                                                    </form>
                                                 @else
-                                                    <a class="btn btn-primary btn-sm">Not
+                                                    <a href="javascript:void(0)" data-id="{{ $row->id }}"
+                                                        data-name="{{ $row->name }}"
+                                                        class="btn btn-primary btn-sm blockButton">Not
                                                         Blocked</a>
                                                 @endif
                                             </td>
@@ -102,21 +129,6 @@
                                                     href="{{ route('admin.user.edit', ['id' => $row->id]) }}">
                                                     <i data-feather="eye" class="icon-lg"></i>
                                                 </a>
-                                                @if ($row->is_blocked)
-                                                    <form action="{{ route('admin.user.unblock', ['id' => $row->id]) }}"
-                                                        method="POST" class="d-inline unblock-form">
-                                                        @csrf
-                                                        <button type="button" class="btn btn-success btn-sm unblock-btn">
-                                                            <i data-feather="check" class="icon-lg"></i>
-                                                        </button>
-                                                    </form>
-                                                @else
-                                                    <a data-id="{{ $row->id }}" data-name="{{ $row->name }}"
-                                                        class="btn btn-warning btn-sm blockButton"
-                                                        href="javascript:void(0)">
-                                                        <i data-feather="x" class="icon-lg"></i>
-                                                    </a>
-                                                @endif
                                             </td>
                                         </tr>
                                     @endforeach
@@ -144,7 +156,7 @@
                                         <th>Name</th>
                                         <th>Email</th>
                                         <th>Coins</th>
-                                        <th>Phone</th>
+                                        <th>Active</th>
                                         <th>Blocked</th>
                                         <th>Action</th>
                                     </tr>
@@ -160,12 +172,39 @@
                                             <td>{{ $row->name }}</td>
                                             <td>{{ $row->email }}</td>
                                             <td>{{ $row->coins }}</td>
-                                            <td>{{ $row->phone }}</td>
                                             <td>
+                                                <form action="{{ route('admin.user.active.status', ['id' => $row->id]) }}"
+                                                    method="get" class="d-inline active-form">
+                                                    @csrf
+                                                    <button type="submit"
+                                                        class="btn btn-success btn-sm unblock-btn d-none">
+                                                        <i data-feather="check" class="icon-lg"></i>
+                                                    </button>
+
+                                                    @if ($row->active_status)
+                                                        <a href="#" class="btn btn-success btn-sm activestatus-a"
+                                                            data-activestatus="{{ $row->active_status }}">Online</a>
+                                                    @else
+                                                        <a href="#" class="btn btn-danger btn-sm activestatus-a"
+                                                            data-activestatus="{{ $row->active_status }}">Offline</a>
+                                                    @endif
+                                                </form>
+
+                                            </td>
+                                            <td class="text-center">
                                                 @if ($row->is_blocked)
-                                                    <a class="btn btn-danger btn-sm">Blocked</a>
+                                                    <form action="{{ route('admin.user.unblock', ['id' => $row->id]) }}"
+                                                        method="POST" class="d-inline unblock-form">
+                                                        @csrf
+                                                        <button type="button" class="btn btn-danger btn-sm unblock-btn">
+                                                            Blocked till <br />
+                                                            ({{ date('Y-m-d H:i: a', strtotime($row->blocked_till)) }})
+                                                        </button>
+                                                    </form>
                                                 @else
-                                                    <a class="btn btn-primary btn-sm">Not
+                                                    <a href="javascript:void(0)" data-id="{{ $row->id }}"
+                                                        data-name="{{ $row->name }}"
+                                                        class="btn btn-primary btn-sm blockButton">Not
                                                         Blocked</a>
                                                 @endif
                                             </td>
@@ -174,21 +213,6 @@
                                                     href="{{ route('admin.user.edit', ['id' => $row->id]) }}">
                                                     <i data-feather="eye" class="icon-lg"></i>
                                                 </a>
-                                                @if ($row->is_blocked)
-                                                    <form action="{{ route('admin.user.unblock', ['id' => $row->id]) }}"
-                                                        method="POST" class="d-inline unblock-form">
-                                                        @csrf
-                                                        <button type="button" class="btn btn-success btn-sm unblock-btn">
-                                                            <i data-feather="check" class="icon-lg"></i>
-                                                        </button>
-                                                    </form>
-                                                @else
-                                                    <a data-id="{{ $row->id }}" data-name="{{ $row->name }}"
-                                                        class="btn btn-warning btn-sm blockButton"
-                                                        href="javascript:void(0)">
-                                                        <i data-feather="x" class="icon-lg"></i>
-                                                    </a>
-                                                @endif
                                             </td>
                                         </tr>
                                     @endforeach
@@ -275,6 +299,37 @@
                 }).then(result => {
                     if (result.isConfirmed) {
                         form.submit();
+                    }
+                });
+            });
+        });
+
+        document.querySelectorAll('.activestatus-a').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                const activeStatus = this.getAttribute('data-activestatus');
+                const msg = (activeStatus == "1") ?
+                    "You want to make this user offline?" :
+                    "You want to make this user online?";
+
+                Swal.fire({
+                    title: "Are you sure?",
+                    text: msg,
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#1c84ee",
+                    cancelButtonColor: "#fd625e",
+                    confirmButtonText: "Yes, do it!"
+                }).then(result => {
+                    if (result.isConfirmed) {
+                        // find and submit the form in the same <td>
+                        const form = this.closest('td').querySelector('form');
+                        if (form) {
+                            form.submit();
+                        } else {
+                            console.error("Form not found for this button");
+                        }
                     }
                 });
             });

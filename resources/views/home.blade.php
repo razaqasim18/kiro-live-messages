@@ -17,77 +17,78 @@
 
     <div class="row">
 
-        <div class="col-xl-4 col-md-6">
-            <!-- card -->
-            <div class="card card-h-100">
-                <!-- card body -->
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-grow-1">
-                            <span class="text-muted mb-3 lh-1 d-block text-truncate">Total Items</span>
-                            <h4 class="mb-3">
-                                <span class="counter-value" data-target="1256">0</span>
-                            </h4>
-                            <div class="text-nowrap">
-                                <span class="badge bg-soft-danger text-danger">-29 Trades</span>
-                                <span class="ms-1 text-muted font-size-13">Since last week</span>
+        @foreach ($friends as $friend)
+            <div class="col-xl-4 col-md-3 col-sm-6 col-12 ">
+                <div class="card">
+                    <div class="card-body">
+                        {{-- <div class="dropdown float-end">
+                                <a class="text-muted dropdown-toggle font-size-16" href="#" role="button"
+                                    data-bs-toggle="dropdown" aria-haspopup="true">
+                                    <i class="bx bx-dots-horizontal-rounded"></i>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-end">
+                                    <a class="dropdown-item" href="#">Edit</a>
+                                    <a class="dropdown-item" href="#">Action</a>
+                                    <a class="dropdown-item" href="#">Remove</a>
+                                </div>
+                            </div> --}}
+                        <div class="d-flex align-items-center">
+                            <div>
+                                <img src="@if ($friend->avatar != '') {{ asset('storage/' . $friend->avatar) }}
+              @else
+                {{ asset('assets/images/users/avatar-' . ($friend->gender ? 1 : 2) . '.jpg') }} @endif"
+                                    alt="User Avatar" class="rounded-circle avatar-lg image-popup">
                             </div>
-                        </div>
-                        <div class="flex-shrink-0 text-end dash-widget">
-                            <div id="mini-chart2" data-colors='["#1c84ee", "#33c38e"]' class="apex-charts"></div>
-                        </div>
-                    </div>
-                </div><!-- end card body -->
-            </div><!-- end card -->
-        </div><!-- end col-->
+                            <div class="flex-1 ms-3">
+                                <h5 class="font-size-15 mb-1"><a href="#" class="text-dark">{{ $friend->name }}</a>
+                                </h5>
 
-        <div class="col-xl-4 col-md-6">
-            <!-- card -->
-            <div class="card card-h-100">
-                <!-- card body -->
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-grow-1">
-                            <span class="text-muted mb-3 lh-1 d-block text-truncate">Average Sales</span>
-                            <h4 class="mb-3">
-                                $<span class="counter-value" data-target="7.54">0</span>M
-                            </h4>
-                            <div class="text-nowrap">
-                                <span class="badge bg-soft-success text-success">+ $2.8k</span>
-                                <span class="ms-1 text-muted font-size-13">Since last week</span>
                             </div>
                         </div>
-                        <div class="flex-shrink-0 text-end dash-widget">
-                            <div id="mini-chart3" data-colors='["#1c84ee", "#33c38e"]' class="apex-charts"></div>
-                        </div>
-                    </div>
-                </div><!-- end card body -->
-            </div><!-- end card -->
-        </div><!-- end col -->
+                        <div class="mt-3 pt-1">
 
-        <div class="col-xl-4 col-md-6">
-            <!-- card -->
-            <div class="card card-h-100">
-                <!-- card body -->
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-grow-1">
-                            <span class="text-muted mb-3 lh-1 d-block text-truncate">Order Delivery</span>
-                            <h4 class="mb-3">
-                                <span class="counter-value" data-target="18.34">0</span>%
-                            </h4>
-                            <div class="text-nowrap">
-                                <span class="badge bg-soft-success text-success">+5.32%</span>
-                                <span class="ms-1 text-muted font-size-13">Since last week</span>
-                            </div>
-                        </div>
-                        <div class="flex-shrink-0 text-end dash-widget">
-                            <div id="mini-chart4" data-colors='["#1c84ee", "#33c38e"]' class="apex-charts"></div>
+                            <p class="text-muted mb-0 mt-2"><i
+                                    class="mdi mdi-email font-size-15 align-middle pe-2 text-primary"></i>
+                                {{ $friend->email }}</p>
+                            <p class="text-muted mb-0 mt-2">
+                                @if (strtolower($friend->gender) === 'male' || $friend->gender == 1)
+                                    <i class="mdi mdi-gender-male text-primary font-size-15 align-middle pe-2"></i> Male
+                                @else
+                                    <i class="mdi mdi-gender-female text-danger font-size-15 align-middle pe-2"></i>
+                                    Female
+                                @endif
+                            </p>
+
                         </div>
                     </div>
-                </div><!-- end card body -->
-            </div><!-- end card -->
-        </div><!-- end col -->
+
+                    <div class="btn-group" role="group">
+                        <a @if (auth()->user()->coins) href="{{ route('friends.call.start', ['id' => Str::slug($friend->name) . '_' . $friend->id]) }}" @else href="javascript:void(0)" @endif
+                            class="btn btn-outline-light text-truncate">
+                            <i class="mdi mdi-phone text-primary font-size-15 align-middle pe-2"></i>
+                            @if (auth()->user()->coins)
+                                Call
+                            @else
+                                <span class="text text-danger"> Not enough coins</span>
+                            @endif
+                        </a>
+
+                        <a href="{{ route('friends.chat', ['id' => $friend->id]) }}"
+                            class="btn btn-outline-light text-truncate">
+                            <i class="mdi mdi-message text-primary font-size-15 align-middle pe-2"></i>
+                            Chat
+                        </a>
+                        {{-- <a href="{{ route('chatting', ['id' => $friend->id]) }}"
+                            class="btn btn-outline-light text-truncate">
+                            <i class="mdi mdi-message text-primary font-size-15 align-middle pe-2"></i>
+                            Chat
+                        </a> --}}
+                    </div>
+
+                </div>
+                <!-- end card -->
+            </div>
+        @endforeach
     </div><!-- end row-->
 @endsection
 @section('script')

@@ -153,7 +153,7 @@ class Chat extends Component
 
         // Deduct and add coins
         $giftsendby->decrement('coins', $coins);
-        $giftsendto->increment('coins', $coins - SettingHelper::getSettingValueByName('gift_coins_commission') ?? 0);
+        $giftsendto->increment('coins', SettingHelper::getCoinsdeduction($coins) ?? 0);
 
         $this->dispatch('deduct-coins', [
             'user_id' => $giftsendby->id,

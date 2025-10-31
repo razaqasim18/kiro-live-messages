@@ -74,6 +74,7 @@
                                                             <i data-feather="users"></i>
                                                         </div>
                                                     </div>
+
                                                     <div class="form-floating form-floating-custom mb-4">
                                                         <input type="password"
                                                             class="form-control @error('password') is-invalid @enderror"
@@ -89,6 +90,7 @@
                                                             <i data-feather="lock"></i>
                                                         </div>
                                                     </div>
+
                                                     <div class="form-floating form-floating-custom mb-4">
                                                         <input type="password"
                                                             class="form-control @error('password_confirmation') is-invalid @enderror"
@@ -98,6 +100,29 @@
                                                         <label for="input-password">Confirm Password</label>
                                                         <div class="form-floating-icon">
                                                             <i data-feather="lock"></i>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-floating form-floating-custom mb-4">
+                                                        <select class="form-control" name="gender"
+                                                            @error('gender') is-invalid @enderror">
+                                                            <option value="">Select
+                                                                Gender</option>
+                                                            <option value="0"
+                                                                @if (old('gender') == '0') selected @endif>Female
+                                                            </option>
+                                                            <option value="1"
+                                                                @if (old('gender') == '1') selected @endif>Male
+                                                            </option>
+                                                        </select>
+                                                        @error('gender')
+                                                            <span class="invalid-feedback" role="alert">
+                                                                <strong>{{ $message }}</strong>
+                                                            </span>
+                                                        @enderror
+                                                        <label for="input-name">Name</label>
+                                                        <div class="form-floating-icon">
+                                                            <i data-feather="users"></i>
                                                         </div>
                                                     </div>
 

@@ -53,7 +53,7 @@ Route::middleware(['auth:web'])->group(function () {
     });
 
     Route::prefix('friends')->as('friends.')->group(function () {
-        Route::get('/', [FriendController::class, 'index'])->name('index');
+        Route::get('/coversation', [FriendController::class, 'index'])->name('index');
         // Start a new call (generates a new channel)
         Route::get('/call/{id}', [FriendController::class, 'call'])->name('call.start');
         // Join an existing call
@@ -116,6 +116,7 @@ Route::middleware(['auth:web'])->group(function () {
             Route::post('/update/{id}', [UserController::class, 'update'])->name('update');
             Route::post('/block', [UserController::class, 'block'])->name('block');
             Route::post('/unblock', [UserController::class, 'unblock'])->name('unblock');
+            Route::get('/active/status/{id}', [UserController::class, 'activeStatus'])->name('active.status');
         });
 
         // Messages routes

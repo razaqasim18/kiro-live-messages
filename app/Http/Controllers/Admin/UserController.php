@@ -32,7 +32,7 @@ class UserController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'phone' => 'required|string', // Use regex if you want to validate phone format
+            // 'phone' => 'required|string', // Use regex if you want to validate phone format
             'gender' => 'required|in:0,1', // assuming 1 = male, 0 = female or customize as needed
             'coin' => 'required|integer|min:0',
         ]);
@@ -43,7 +43,7 @@ class UserController extends Controller
         $user->gender = $request->gender;
         $user->coins = $request->coin;
 
-        if ($user->update()) {
+        if ($user->save()) {
             return redirect()->route('admin.user.index')->with('success', 'User is updated successfully');
         } else {
             return redirect()->route('admin.user.index')->with('error', 'Something went wrong');
@@ -76,6 +76,17 @@ class UserController extends Controller
         $user->blocked_till = NULL;
         if ($user->save()) {
             return redirect()->route('admin.user.index')->with('success', 'User is unblocked successfully.');
+        } else {
+            return redirect()->route('admin.user.index')->with('error', 'Something went wrong');
+        }
+    }
+
+    public function activeStatus($id)
+    {
+        $user = User::findOrFail($id);
+        $user->active_status = !$user->active_status;
+        if ($user->save()) {
+            return redirect()->route('admin.user.index')->with('success', 'User is status changed successfully.');
         } else {
             return redirect()->route('admin.user.index')->with('error', 'Something went wrong');
         }

@@ -36,8 +36,11 @@
                             <label class="col-sm-3 col-form-label">Gift Coins Commission <span
                                     class="text-danger">*</span></label>
                             <div class="col-sm-9">
-                                <input type="text" class="form-control" name="gift_coins_commission"
-                                    id="gift_coins_commission" value="{!! SettingHelper::getSettingValueByName('gift_coins_commission') !!}" required>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" name="gift_coins_commission"
+                                        id="gift_coins_commission" value="{!! SettingHelper::getSettingValueByName('gift_coins_commission') !!}" required>
+                                    <span class="input-group-text">%</span>
+                                </div>
                                 @error('gift_coins_commission')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
@@ -48,8 +51,11 @@
                             <label class="col-sm-3 col-form-label">Call Coins Deduction <span
                                     class="text-danger">*</span></label>
                             <div class="col-sm-9">
-                                <input type="text" class="form-control" name="call_coins_deduction"
-                                    id="call_coins_deduction" value="{!! SettingHelper::getSettingValueByName('call_coins_deduction') !!}" required>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" name="call_coins_deduction"
+                                        id="call_coins_deduction" value="{!! SettingHelper::getSettingValueByName('call_coins_deduction') !!}" required>
+                                    <span class="input-group-text">%</span>
+                                </div>
                                 @error('call_coins_deduction')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror

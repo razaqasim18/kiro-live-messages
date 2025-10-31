@@ -42,6 +42,13 @@ class HomeController extends Controller
     public function index()
     {
 
-        return view('home');
+        $friends = User::where('is_admin', 0)
+            ->where('id', '!=', Auth::id())
+            ->get();
+
+
+        return view('home', [
+            'friends' => $friends
+        ]);
     }
 }

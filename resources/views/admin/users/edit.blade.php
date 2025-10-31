@@ -28,7 +28,7 @@
                         method="POST" enctype="multipart/form-data" id="update-user">
                         @csrf
                         <div class="row">
-                            <div class="col-lg-12">
+                            <div class="col-lg-6">
                                 <div class="mb-3">
                                     <label for="useremail" class="form-label">Email</label>
                                     <input type="email" class="form-control @error('email') is-invalid @enderror"
@@ -47,6 +47,20 @@
                                         <div class="text-danger" id="nameError">{{ $message }}</div>
                                     @enderror
                                 </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="mb-3">
+                                    <label for="usercoin" class="form-label">Coins</label>
+                                    <input type="number" class="form-control @error('coin') is-invalid @enderror"
+                                        value="{{ $user->coins }}" id="usercoin" name="coin" autofocus
+                                        placeholder="Enter coin">
+                                    @error('coin')
+                                        <div class="text-danger" id="coinError">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                            </div>
+                            <div class="col-lg-6">
                                 <div class="mb-3">
                                     <label for="gender" class="form-label">Gender</label>
                                     <select class="form-select" id="gender" name="gender">
@@ -60,7 +74,18 @@
                                     @enderror
                                 </div>
                             </div>
-                            <div class="col-lg-6">
+                            <div class="col-lg-12">
+                                <div class="mb-3">
+
+                                    <div class="text-start mt-2">
+                                        <img src="@if ($user->avatar != '') {{ asset('storage/' . $user->avatar) }}
+              @else
+                {{ asset('assets/images/users/avatar-' . ($user->gender ? 1 : 2) . '.jpg') }} @endif"
+                                            alt="User Avatar" class="rounded-circle avatar-lg image-popup">
+                                    </div>
+                                </div>
+                            </div>
+                            {{-- <div class="col-lg-6">
                                 <div class="mb-3">
                                     <label for="userphone" class="form-label">Phone</label>
                                     <input type="tel" class="form-control @error('phone') is-invalid @enderror"
@@ -70,35 +95,20 @@
                                         <div class="text-danger" id="phoneError">{{ $message }}</div>
                                     @enderror
                                 </div>
-                                <div class="mb-3">
-                                    <label for="usercoin" class="form-label">Coins</label>
-                                    <input type="number" class="form-control @error('coin') is-invalid @enderror"
-                                        value="{{ $user->coins }}" id="usercoin" name="coin" autofocus
-                                        placeholder="Enter coin">
-                                    @error('coin')
-                                        <div class="text-danger" id="coinError">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-12">
-                            <div class="mb-3">
+                                --}}
 
-                                <div class="text-start mt-2">
-                                    <img src="@if ($user->avatar != '') {{ URL::asset('storage/' . $user->avatar) }}@else{{ URL::asset('assets/images/users/avatar-1.jpg') }} @endif"
-                                        alt="" class="rounded-circle avatar-lg image-popup">
-                                </div>
-                            </div>
                         </div>
-
-                        <div class="mt-3 d-grid">
-                            <button class="btn btn-primary waves-effect waves-light" type="submit">Update</button>
-                        </div>
-                    </form>
                 </div>
+
+
+                <div class="mt-3 d-grid">
+                    <button class="btn btn-primary waves-effect waves-light" type="submit">Update</button>
+                </div>
+                </form>
             </div>
         </div>
-        <!-- end tab content -->
+    </div>
+    <!-- end tab content -->
     </div>
     <!-- end col -->
 @endsection
