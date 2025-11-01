@@ -49,7 +49,7 @@
 
         /* 🧍 Get authenticated user's ID from Blade */
         const authUserId = {{ auth()->id() }};
-
+        console.log(authUserId);
         /* 📡 Listen for incoming call events */
         Echo.private(`calluser.${authUserId}`)
             .listen('.incoming-call', (e) => {

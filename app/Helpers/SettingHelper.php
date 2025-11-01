@@ -2,7 +2,7 @@
 namespace App\Helpers;
 
 use App\Models\Setting;
-
+use App\Models\User;
 
 class SettingHelper
 {
@@ -19,5 +19,11 @@ class SettingHelper
 
         $netCoins = $coins - (($coins * $commissionPercent) / 100);
         return floor($netCoins);
+    }
+
+    public  static function getUserinfoByCallsId($id)
+    {
+        $response = User::findorFail($id);
+        return ($response) ? $response : null;
     }
 }

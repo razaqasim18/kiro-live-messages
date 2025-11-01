@@ -54,7 +54,11 @@ Route::middleware(['auth:web'])->group(function () {
 
     Route::prefix('friends')->as('friends.')->group(function () {
         Route::get('/coversation', [FriendController::class, 'index'])->name('index');
+        Route::post('/call/gift/send', [FriendController::class, 'sendGift'])->name('call.gift.send');
+
+
         // Start a new call (generates a new channel)
+
         Route::get('/call/{id}', [FriendController::class, 'call'])->name('call.start');
         // Join an existing call
         Route::get('/calling/{id}/{channelname}', [FriendController::class, 'videoCall'])

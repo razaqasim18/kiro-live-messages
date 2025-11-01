@@ -26,3 +26,10 @@ Broadcast::channel('chat.{id}', function ($user, $id) {
 
     return (int) $user->id === (int) $id;
 });
+
+
+Broadcast::channel('callgift.{id}', function ($user, $id) {
+    Log::info("call gift for user channel: user={$user->id}, param={$id}");
+
+    return (int) $user->id === (int) $id;
+});

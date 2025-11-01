@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\CallGiftEvent;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -10,6 +11,8 @@ use TaylanUnutmaz\AgoraTokenBuilder\RtcTokenBuilder;
 use Illuminate\Support\Str;
 use App\Events\IncomingCall;
 use App\Helpers\SettingHelper;
+use App\Models\Call;
+use App\Models\Gift;
 use Illuminate\Support\Facades\DB;
 
 class FriendController extends Controller
@@ -66,40 +69,73 @@ class FriendController extends Controller
 
     public function call($variable)
     {
-        // Make sure $variable exists and has an underscore
         $idParts = explode("_", $variable);
-        // Check if ID exists
         if (!isset($idParts[1])) {
             abort(400, "Invalid variable format.");
         }
+
         $userId = $idParts[1];
-        // Find user or fail
-        $user = User::findOrFail($userId);
-        // Generate a unique channel name
-        $channelname = Str::slug($user->name . '_' . base64_encode($user->id) . '_' . Str::random(8));
-        // Redirect to the join route with channel name
+        $remoteUser = User::findOrFail($userId);
+        $localUser = Auth::user();
+
+        // 🔍 Check if there's an existing ongoing call between these two users
+        $existingCall = Call::where(function ($q) use ($localUser, $remoteUser) {
+            $q->where('caller_id', $localUser->id)
+                ->where('calle_id', $remoteUser->id);
+        })->orWhere(function ($q) use ($localUser, $remoteUser) {
+            $q->where('caller_id', $remoteUser->id)
+                ->where('calle_id', $localUser->id);
+        })
+            ->first();
+
+        if ($existingCall) {
+            // 🟢 If call already exists, reuse same channel
+            $channelname = $existingCall->channel;
+        } else {
+            // 🆕 Otherwise create new call entry
+            $channelname = Str::slug($remoteUser->name . '_' . base64_encode($remoteUser->id) . '_' . Str::random(8));
+
+            $call = Call::create([
+                'caller_id' => $localUser->id,
+                'calle_id' => $remoteUser->id,
+                'channel' => $channelname,
+            ]);
+        }
+
         return redirect()->route('friends.call.join', [
-            'id' => base64_encode($user->id),
-            'channelname' => $channelname
+            'id' => base64_encode($remoteUser->id),
+            'channelname' => $channelname,
         ]);
     }
 
+
     public function videoCall($id, $channelname)
     {
-        $appId = config('app.agora-app-id');
-        $token = null; // Replace with real token generation later
         $remote = User::findOrFail(base64_decode($id));
         $local = Auth::user();
+        $gifts = Gift::all();
 
+        // ✅ Find existing call instead of creating a new one
+        $call = Call::where('channel', $channelname)->first();
 
+        if (!$call) {
+            // if somehow no call exists (e.g. callee joins directly)
+            $call = Call::create([
+                'caller_id' => $local->id,
+                'calle_id' => $remote->id,
+                'channel' => $channelname,
+            ]);
+        }
 
         return view('friend.call', [
-            'appId' => $appId,
+            'appId' => config('app.agora-app-id'),
             'id' => base64_encode($id),
             "remote_user" => $remote,
             "local_user" => $local,
             'channelname' => $channelname,
-            "token" => $token
+            "token" => null,
+            "gifts" => $gifts,
+            "call" => $call,
         ]);
     }
 
@@ -117,6 +153,30 @@ class FriendController extends Controller
         return response()->json(['status' => 'end', 'remaining' => 0]);
     }
 
+
+    public function sendGift(Request $request)
+    {
+
+        $request->validate([
+            'receiverid' => 'required|exists:users,id',
+        ]);
+
+        $sender = User::find($request->senderid);
+        $gift = Gift::findorFail($request->giftid);
+
+        if ($gift->coins > $sender->coins) {
+            return response()->json(['message' => 'Not enough coins!'], 400);
+        }
+
+        $receiver = User::find($request->receiverid);
+
+        // Deduct and add coins
+        $sender->decrement('coins',  $gift->coins);
+        $receiver->increment('coins', SettingHelper::getCoinsdeduction($gift->coins) ?? 0);
+
+        broadcast(new CallGiftEvent($sender, $receiver, $gift, 1))->toOthers();
+        return response()->json(['data' => $sender]);
+    }
 
     public function getToken(Request $request)
     {

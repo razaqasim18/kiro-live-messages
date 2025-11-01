@@ -144,30 +144,19 @@
 
     <!-- 🔑 Hidden inputs to pass Agora parameters -->
     <input type="hidden" id="appid" value="{{ $appId }}">
-    <input type="hidden" id="remote_user_id" value="{{ $remote_user->id }}">
-    <input type="hidden" id="remote_user_name" value="{{ $remote_user->name }}">
+    <input type="hidden" id="callid" value="{{ $call->id }}">
+    @php
+        $remote = SettingHelper::getUserinfoByCallsId($call->calle_id);
+        $local = SettingHelper::getUserinfoByCallsId($call->caller_id);
+    @endphp
+    <input type="text" id="remote_user_id" value="{{ $remote->id }}">
+    <input type="text" id="remote_user_name" value="{{ $remote->name }}">
 
-    <input type="hidden" id="local_user_id" value="{{ $local_user->id }}">
-    <input type="hidden" id="remote_user_name" value="{{ $local_user->name }}">
-
+    <input type="text" id="local_user_id" value="{{ $local->id }}">
+    <input type="text" id="local_user_name" value="{{ $local->name }}">
 
     <input type="hidden" id="channelname" value="{{ $channelname }}">
     <input type="hidden" id="token" value="{{ $token }}">
-
-    {{-- <div class="alert alert-info">
-        <strong>Channel Created:</strong> {{ $channelname }}<br>
-        <strong>Join Link:</strong>
-        <a href="{{ route('friends.call.join', [
-            'id' => base64_encode($id),
-            'channelname' => $channelname,
-        ]) }}"
-            target="_blank">
-            {{ route('friends.call.join', [
-                'id' => base64_encode($id),
-                'channelname' => $channelname,
-            ]) }}
-        </a>
-    </div> --}}
 
     <div class="row video-group">
         {{-- 🧍 Local Player --}}
@@ -189,7 +178,7 @@
 
         {{-- 👥 Remote Player --}}
         <div class="col-6 text-center">
-            <p class="player-name">Remote User</p>
+            <p class="player-name">{{ $remote_user->name }}</p>
 
             <div id="remote-playerlist">
                 <!-- Default avatar shown before remote joins -->
@@ -235,6 +224,28 @@
     </div>
 
 
+    {{-- Gift Div --}}
+    <div class="card ms-3 me-3 mt-3" style="height: 200px; overflow-x: auto; overflow-y: hidden; white-space: nowrap;">
+        <div class="d-flex flex-row">
+            @foreach ($gifts as $gift)
+                <div style="cursor: pointer; display: inline-block; width: 150px;"
+                    class="m-2 p-3 px-3 position-relative gift-item" data-id="{{ $gift->id }}"
+                    data-senderid="{{ Auth::user()->id }}"
+                    data-receiverid="{{ Auth::user()->id == $remote->id ? $local->id : $remote->id }}">
+
+                    {{-- Default display --}}
+                    <div class="border d-flex justify-content-center align-items-center gift-box">
+                        <div class="text-center">
+                            <dotlottie-wc src="{{ $gift->link }}" style="width: 100%; height: 100%;" autoplay
+                                loop></dotlottie-wc>
+                            <h6 class="mt-2 mb-0 text-dark">Send for {{ $gift->coins }}</h6>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    </div>
+
 @endsection
 
 
@@ -249,6 +260,8 @@
             let channelname = document.getElementById("channelname").value;
             let local_user_id = document.getElementById("local_user_id").value;
             let remote_user_id = document.getElementById("remote_user_id").value;
+            console.log(local_user_id);
+            console.log(remote_user_id);
             axios.get(`/friends/call/start/notification/${local_user_id}/${remote_user_id}/${channelname}`)
                 .then(response => {
                     console.log("📴 Call notification manually:", response.data);
@@ -277,6 +290,20 @@
                     }).then(() => {
                         window.location.href = "{{ route('friends.index') }}";
                     });
+                });
+
+
+            Echo.private(`callgift.${authUserId}`)
+                .listen('.call-gift-message', (e) => {
+                    Swal.fire({
+                        title: 'You received Gift',
+                        icon: 'success',
+                        timer: 2500,
+                        showConfirmButton: false,
+                        position: 'top-end',
+                        toast: true
+                    });
+                    $("#coinid").text("Coins: " + e.receiver.coins);
                 });
         });
 
@@ -625,4 +652,65 @@
             if (coinInterval) clearInterval(coinInterval);
         }
     </script>
+
+    <script>
+        $(document).ready(function() {
+            $('.gift-item').on('click', function() {
+                const id = $(this).data('id');
+                const receiverid = $(this).data('receiverid');
+                const senderid = $(this).data('senderid');
+                const csrfToken = $('meta[name="csrf-token"]').attr('content');
+
+                // Optional: disable temporarily to prevent double click
+                $(this).addClass('disabled').css('opacity', '0.6');
+
+                $.ajax({
+                    url: "{{ route('friends.call.gift.send') }}",
+                    type: "POST",
+                    data: {
+                        _token: csrfToken,
+                        receiverid: receiverid,
+                        senderid: senderid,
+                        giftid: id,
+                    },
+                    success: function(response) {
+                        // ✅ Update the user's coin display
+                        if (response.data.coins !== undefined) {
+                            Swal.fire({
+                                title: 'Gift send',
+                                icon: 'success',
+                                timer: 2500,
+                                showConfirmButton: false,
+                                position: 'top-end',
+                                toast: true
+                            });
+                            $("#coinid").text("Coins: " + response.data.coins);
+                        }
+
+                        // console.log("Gift sent successfully:", data);
+                    },
+                    error: function(xhr) {
+                        Swal.fire({
+                            title: 'Gift not send',
+                            text: 'Your dont have enough coins',
+                            icon: 'error',
+                            timer: 2500,
+                            showConfirmButton: false,
+                            position: 'top-end',
+                            toast: true
+                        });
+                        console.error("Error sending gift:", xhr.responseJSON?.message || xhr
+                            .statusText);
+                    },
+                    complete: function() {
+                        // Re-enable button
+                        $('.gift-item').removeClass('disabled').css('opacity', '1');
+                    }
+                });
+            });
+        });
+    </script>
+
+    <script src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.8.5/dist/dotlottie-wc.js" type="module"></script>
+
 @endsection
